@@ -1,0 +1,128 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>ChhotiLink - Shorten Your URLs</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: radial-gradient(circle at top left, #0f172a, #000000);
+    }
+  </style>
+</head>
+<body class="min-h-screen text-white font-sans px-4 py-12 relative">
+
+  <!-- 🔴 Logout Button -->
+  <div class="absolute top-6 right-6 z-20">
+    <a href="/home" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md shadow-md transition duration-200">
+      🚪 Logout
+    </a>
+  </div>
+
+  <!-- Main Container -->
+  <div class="flex flex-col md:flex-row gap-10 items-center justify-center max-w-6xl mx-auto w-full">
+
+    <!-- Left Content -->
+    <div class="hidden md:flex flex-col justify-center w-1/2">
+      <h2 class="text-5xl font-bold text-blue-500 mb-4 leading-tight">Make Your Links <span class="text-white">Short & Sweet</span> 🔗</h2>
+      <p class="text-gray-300 text-lg">Cut the clutter. Share smarter. With <strong>ChhotiLink</strong>, long URLs are a thing of the past.</p>
+    </div>
+
+    <!-- Right Side Box -->
+    <div class="bg-gray-900 p-8 rounded-2xl shadow-2xl w-full md:w-1/2 border border-blue-800">
+      <h1 class="text-3xl font-bold text-center text-blue-400 mb-2">ChhotiLink</h1>
+      <p class="text-center text-gray-400 text-sm mb-6">The easiest way to shorten URLs, clean & fast!</p>
+
+      <form id="urlForm" action="/" method="POST" class="space-y-4">
+        <input
+          id="urlInput"
+          type="url"
+          name="url"
+          required
+          placeholder="Paste your long URL here 🔍"
+          class="w-full p-3 border border-gray-700 bg-gray-800 text-white placeholder-gray-500 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        />
+        <button
+          type="submit"
+          class="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition duration-200 transform hover:scale-105"
+        >
+          ✂️ Shorten It
+        </button>
+      </form>
+
+      <div id="shortUrlBox" class="mt-6 hidden">
+        <p class="text-blue-400 font-semibold mb-1">✨ Your Short URL:</p>
+        <a id="shortUrlLink" href="#" target="_blank" class="text-blue-300 underline break-all hover:text-blue-400 transition"></a>
+      </div>
+
+      <div id="shortUrlsList" class="mt-8 w-full hidden">
+        <h2 class="text-lg font-semibold text-blue-400 mb-2">📜 Past Shortened URLs:</h2>
+        <ul id="urlsUl" class="space-y-2 list-disc list-inside text-sm text-blue-300"></ul>
+      </div>
+
+      <div id="errorMsg" class="text-red-500 mt-4 hidden"></div>
+    </div>
+  </div>
+
+  <!-- Toast Message -->
+  <div id="toast" class="fixed bottom-5 right-5 bg-blue-700 text-white px-6 py-3 rounded-md shadow-lg hidden transition duration-300">
+    Link shortened successfully! 🔗
+  </div>
+
+  <script>
+    const form = document.getElementById('urlForm');
+    const input = document.getElementById('urlInput');
+    const errorMsg = document.getElementById('errorMsg');
+    const shortBox = document.getElementById('shortUrlBox');
+    const shortLink = document.getElementById('shortUrlLink');
+    const urlsList = document.getElementById('shortUrlsList');
+    const urlsUl = document.getElementById('urlsUl');
+    const toast = document.getElementById('toast');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const longUrl = input.value.trim();
+      if (!longUrl) return;
+
+      try {
+        const response = await fetch('http://localhost:8000/url/', {
+          method: form.method,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ url: longUrl }),
+        });
+
+        if (!response.ok) throw new Error("Failed to shorten URL");
+
+        const data = await response.json();
+        const shortId = data.id;
+        const shortUrl = `${window.location.origin}/url/${shortId}`;
+
+        shortLink.href = shortUrl;
+        shortLink.textContent = shortUrl;
+        shortBox.classList.remove('hidden');
+        errorMsg.classList.add('hidden');
+
+        const li = document.createElement('li');
+        li.innerHTML = `<a href="${shortUrl}" target="_blank" class="hover:text-blue-400 break-all">${shortUrl}</a>`;
+        urlsUl.prepend(li);
+        urlsList.classList.remove('hidden');
+
+        input.value = '';
+        toast.classList.remove('hidden');
+        setTimeout(() => toast.classList.add('hidden'), 3000);
+
+      } catch (error) {
+        console.error(error);
+        errorMsg.textContent = 'Something went wrong. Try again.';
+        errorMsg.classList.remove('hidden');
+        shortBox.classList.add('hidden');
+      }
+    });
+  </script>
+
+</body>
+</html>
