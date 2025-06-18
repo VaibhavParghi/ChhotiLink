@@ -30,25 +30,46 @@
 
 ChhotiLink/
 ├── controllers/ # Route handlers
+
 ├── middlewares/ # Middleware (e.g., auth checks)
+
 ├── models/ # Mongoose schemas
+
 ├── node_modules/ # Dependencies
+
 ├── routes/ # API routes
+
 │ ├── url.js
+
 │ └── users.js
+
+
 ├── services/ # Auth service
+
 │ └── auth.js
+
 ├── views/ # EJS templates
+
 │ ├── homePage.ejs
+
 │ ├── loginPage.ejs
+
 │ ├── signupPage.ejs
+
 │ └── urls.ejs
+
 ├── .env # Environment config
+
 ├── app.js # Main app logic
+
 ├── connect.js # MongoDB connection
+
 ├── package.json
+
 ├── package-lock.json
+
 └── README.md
+
 
 ---
 
